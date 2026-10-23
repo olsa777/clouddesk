@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123e38">
+  <title>CloudDesk — заявки на ресурсы</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23123e38'/%3E%3Cpath d='M20 42h25a9 9 0 0 0 0-18 14 14 0 0 0-27-1 10 10 0 0 0 2 19' fill='none' stroke='%23b9f3db' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="CloudDesk — главная"><span class="brand-icon" aria-hidden="true">☁</span>CloudDesk<span class="brand-dot">.</span></a>
+    <div class="workspace"><span class="workspace-avatar">D</span><div><strong>Demo workspace</strong><small>Учебный проект</small></div></div>
+    <p class="nav-label">РАБОЧЕЕ ПРОСТРАНСТВО</p>
+    <a href="#requests" class="nav-item active"><span aria-hidden="true">▦</span> Заявки на ресурсы <span class="nav-count" id="nav-count">0</span></a>
+    <a href="#workflow" class="nav-item"><span aria-hidden="true">⇄</span> Как это работает</a>
+    <div class="sidebar-note"><span class="small-dot"></span><strong>Локальная демонстрация</strong><p>Создавайте заявки и изучайте процесс согласования ресурсов.</p><small>Java · Spring Boot · H2</small></div>
+    <div class="sidebar-footer"><span class="avatar">OA</span><div><strong>Учебное портфолио</strong><small>Олжас Ахонов</small></div><span class="version">v1.0</span></div>
+  </aside>
+
+  <div class="page">
+    <header class="topbar"><div>Рабочее пространство <span>/</span> <strong>Заявки</strong></div><span class="sandbox"><span></span> SANDBOX</span></header>
+    <main id="requests">
+      <div class="page-heading"><div><p class="eyebrow">УПРАВЛЕНИЕ РЕСУРСАМИ</p><h1>Заявки на ресурсы</h1><p class="subtitle">От запроса до согласования — всё в одном месте.</p></div><button class="button primary" id="new-request"><span aria-hidden="true">＋</span> Создать заявку</button></div>
+      <div class="notice" id="notice" role="status" hidden></div>
+      <section class="metrics" aria-label="Общая статистика">
+        <article class="metric"><div class="metric-label">Всего заявок<span class="metric-icon">▤</span></div><strong id="stat-total">—</strong><small>За всё время</small></article>
+        <article class="metric"><div class="metric-label">Ожидают решения<span class="metric-icon amber">◷</span></div><strong id="stat-pending">—</strong><small>Нуждаются в согласовании</small></article>
+        <article class="metric"><div class="metric-label">Выделено ресурсов<span class="metric-icon green">✓</span></div><strong id="stat-provisioned">—</strong><small>Заявки со статусом «Выделено»</small></article>
+        <article class="metric resource-metric"><div class="metric-label">Согласованная мощность<span class="metric-icon green">⌘</span></div><strong><span id="stat-cpu">—</span> <em>vCPU</em></strong><small><span id="stat-memory">—</span> ГБ RAM <span class="separator">·</span> <span id="stat-storage">—</span> ГБ диска</small></article>
+      </section>
+      <section class="requests-panel" aria-labelledby="list-title">
+        <div class="panel-heading"><div><h2 id="list-title">Все заявки <span id="result-count" class="count">0</span></h2><p>Управляйте запросами для каждой среды.</p></div><button class="button secondary compact" id="refresh" aria-label="Обновить список">↻ <span>Обновить</span></button></div>
+        <div class="toolbar"><div class="filters" role="group" aria-label="Фильтр по статусу"><button class="filter selected" data-status="" aria-pressed="true">Все</button><button class="filter" data-status="NEW" aria-pressed="false">Новые</button><button class="filter" data-status="APPROVED" aria-pressed="false">Одобрены</button><button class="filter" data-status="PROVISIONED" aria-pressed="false">Выделено</button><button class="filter" data-status="REJECTED" aria-pressed="false">Отклонены</button></div><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Поиск по названию…" aria-label="Поиск по названию заявки"></label></div>
+        <div class="list-head" aria-hidden="true"><span>ЗАЯВКА / СРЕДА</span><span>РЕСУРСЫ</span><span>СТАТУС</span><span>ДЕЙСТВИЯ</span></div>
+        <div id="request-list" aria-live="polite"><div class="empty">Загрузка заявок…</div></div>
+        <div class="list-footer"><span id="shown-count">Загрузка…</span><span>Время отображается в вашем часовом поясе</span></div>
+      </section>
+      <section id="workflow" class="workflow" aria-labelledby="workflow-title"><div class="workflow-intro"><span class="eyebrow">ПРОЦЕСС СОГЛАСОВАНИЯ</span><h2 id="workflow-title">Три шага до ресурса</h2><p>Это симуляция: изменение статуса не создаёт облачный сервер.</p></div><ol><li><span>01</span><div><strong>Создайте заявку</strong><small>Выберите среду и конфигурацию.</small></div></li><li><span>02</span><div><strong>Согласуйте запрос</strong><small>Одобрите или отклоните заявку.</small></div></li><li><span>03</span><div><strong>Отметьте выделение</strong><small>Завершите одобренную заявку.</small></div></li></ol></section>
+      <footer class="page-footer">CloudDesk <span>Учебный сервис заявок на виртуальные ресурсы</span></footer>
+    </main>
+  </div>
+
+  <dialog id="create-dialog" aria-labelledby="create-title">
+    <div class="dialog-heading"><div><p class="eyebrow">НОВЫЙ ЗАПРОС</p><h2 id="create-title">Создать заявку</h2></div><button class="close-button" data-close="create-dialog" type="button" aria-label="Закрыть форму">×</button></div>
+    <form id="create-form">
+      <p class="form-intro">Опишите задачу и выберите ресурсы для виртуального сервера.</p>
+      <label>Название заявки<input name="title" required maxlength="120" placeholder="Например, сервер для учебного API" autocomplete="off"></label>
+      <label>Описание<textarea name="description" required maxlength="2000" rows="3" placeholder="Для чего нужны ресурсы? Какие сервисы будут запущены?"></textarea></label>
+      <label>Среда<select name="environment"><option value="DEVELOPMENT">Development — разработка</option><option value="STAGING">Staging — тестирование</option><option value="PRODUCTION">Production — эксплуатация</option></select></label>
+      <div class="resource-fields"><label>Процессор, vCPU<input type="number" name="cpu" min="1" max="32" step="1" value="2" required><small>От 1 до 32</small></label><label>Память, ГБ<input type="number" name="memoryGb" min="1" max="128" step="1" value="4" required><small>От 1 до 128</small></label><label>Диск, ГБ<input type="number" name="storageGb" min="10" max="2000" step="1" value="40" required><small>От 10 до 2000</small></label></div>
+      <div class="form-error" id="form-error" role="alert" hidden></div>
+      <div class="form-footer"><button class="button secondary" type="button" id="fill-example">Заполнить пример</button><button class="button primary" type="submit" id="submit-request">Создать заявку</button></div>
+    </form>
+  </dialog>
+  <dialog id="detail-dialog" aria-labelledby="detail-title"><div class="dialog-heading"><div><p class="eyebrow" id="detail-number">ЗАЯВКА</p><h2 id="detail-title"></h2></div><button class="close-button" data-close="detail-dialog" aria-label="Закрыть карточку">×</button></div><div id="detail-content"></div></dialog>
+</body>
+</html>
