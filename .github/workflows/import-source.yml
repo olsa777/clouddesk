@@ -1,0 +1,46 @@
+name: Publish verified CloudDesk source
+on:
+  push:
+    paths:
+      - .github/workflows/import-source.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Unpack the verified source archive
+        shell: python
+        run: |
+          from pathlib import Path, PurePosixPath
+          import hashlib, zipfile
+          archive = Path('CloudDesk_source.zip')
+          expected = '618a093ce3ae96c13b708045e01e76910780e9c91b63983c00da7cb9af1ff4a6'
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == expected
+          assert not Path('pom.xml').exists(), 'Application source is already present'
+          with zipfile.ZipFile(archive) as source:
+              for entry in source.infolist():
+                  parts = PurePosixPath(entry.filename).parts
+                  assert parts[0] == 'clouddesk' and '..' not in parts
+                  if entry.is_dir() or len(parts) < 2 or parts[1] == '.github':
+                      continue
+                  assert not any(p in ('.git', 'target', 'data', '.env') for p in parts)
+                  dest = Path(*parts[1:])
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  dest.write_bytes(source.read(entry))
+          Path('mvnw').chmod(0o755)
+      - name: Build and test on Java 17
+        run: ./mvnw --batch-mode verify
+      - name: Publish source files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .gitignore .mvn README.md docs pom.xml mvnw mvnw.cmd src
+          git commit -m 'Add CloudDesk application source and tests'
+          git push origin HEAD:main
